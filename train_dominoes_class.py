@@ -20,6 +20,7 @@ class DominoGame:
         
         print("Highest Domino is",self.highest_domino)
         self.get_hand()
+        print("Your Hand:",self.hand)
         
     def is_valid(self):
         ''' Returns a bool depicting whether the given set of 
@@ -47,7 +48,6 @@ class DominoGame:
                 self.highest_domino = int(x[0])
                 return True
         
-        
     def get_hand(self):
         ''' Temprorary, should be replaced with user input '''
         # Remove the current tile (middle domino)
@@ -66,29 +66,36 @@ class DominoGame:
 
     def solve(self):
         ''' Gets the longest train with the available dominoes in self.hand '''
-        max_length = self.recursive_solve(self.current_tile, self.hand)
+        max_length, train = self.recursive_solve(self.current_tile, self.hand)
         print("Maximum Train Length is:",max_length)
+        print("The best train is",train)
        
-    def recursive_solve(self, domino, pool, score=0):
-        # Current tile domino stored in self.current_tile
-        # Uses a pool of dominos to reset back to user sent dominos after each "round"
-        # Round starts at zero
+    def recursive_solve(self, domino, pool, score=0, train=[]):
+        ''' Recurisve helper function to solve() '''
         next_dominoes = self.get_next_dominoes(domino, pool)
         
-        print("Hand:",pool)
-        print(next_dominoes)        
+        #print("Hand:",pool)
+        #print(next_dominoes)        
         
         if(len(next_dominoes) == 0):
-            return score
+            return score, train
         
         best_score = score
+        best_train = train
         
         for path in next_dominoes:
-            print("Current Path:",path)
+            #print("Current Path:",path)
             new_hand = list(set(pool) - {path,self.flipped_domino(path)})
-            best_score = max(best_score, self.recursive_solve(path, new_hand, score+1))
+            
+            new_score, new_train = self.recursive_solve(path, new_hand, score+1, train+[path])
+            
+            if new_score > best_score:
+                best_score = new_score
+                best_train = new_train
+            
+            #best_score = max(best_score, self.recursive_solve(path, new_hand, score+1))
         
-        return best_score
+        return best_score, best_train
             
     
     def get_next_dominoes(self, current_num, pool):
