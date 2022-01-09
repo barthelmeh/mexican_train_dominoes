@@ -7,7 +7,7 @@ class DominoGame:
         self.dominoes = dominoes
         self.domino_pool = dominoes
         self.highest_domino = 0
-        self.start_number_dominoes = 4
+        self.start_number_dominoes = 15
         self.round_num = 0
         
         self.hand = []
@@ -66,9 +66,10 @@ class DominoGame:
 
     def solve(self):
         ''' Gets the longest train with the available dominoes in self.hand '''
-        self.recursive_solve(self.current_tile, self.hand)
+        max_length = self.recursive_solve(self.current_tile, self.hand)
+        print("Maximum Train Length is:",max_length)
        
-    def recursive_solve(self, domino, pool):
+    def recursive_solve(self, domino, pool, score=0):
         # Current tile domino stored in self.current_tile
         # Uses a pool of dominos to reset back to user sent dominos after each "round"
         # Round starts at zero
@@ -78,17 +79,17 @@ class DominoGame:
         print(next_dominoes)        
         
         if(len(next_dominoes) == 0):
-            print("***RETURNING***")
-            return 0
-        if len(next_dominoes) == 1:
-            return 1
+            return score
         
-        max_length = 0
+        best_score = score
+        
         for path in next_dominoes:
             print("Current Path:",path)
             new_hand = list(set(pool) - {path,self.flipped_domino(path)})
-            max_length = max(max_length, 1 + self.recursive_solve(path, new_hand))
-            print(max_length)
+            best_score = max(best_score, self.recursive_solve(path, new_hand, score+1))
+        
+        return best_score
+            
     
     def get_next_dominoes(self, current_num, pool):
         ''' Gets a set of the next available tiles given current_tile'''

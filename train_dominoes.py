@@ -2,7 +2,7 @@ from train_dominoes_class import DominoGame
 
 def main():
     domino_list = []
-    highest_num = 3
+    highest_num = 12
     
     for i in range(highest_num+1): # +1 to include blanks
         for j in range(i,highest_num+1):
